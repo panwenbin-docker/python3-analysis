@@ -1,0 +1,35 @@
+From 4ee1b201ed16d265d5fefdd17fc6a0fade595644 Mon Sep 17 00:00:00 2001
+From: Pan Wenbin <panwenbin@gmail.com>
+Date: Fri, 7 May 2021 13:47:49 +0800
+Subject: [PATCH] change type check from list and tuple to Iterable, which
+ supports inserting dataframe with use_numpy off
+
+---
+ clickhouse_driver/util/helpers.py | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/clickhouse_driver/util/helpers.py b/clickhouse_driver/util/helpers.py
+index 8a12c64..98462a3 100644
+--- a/clickhouse_driver/util/helpers.py
++++ b/clickhouse_driver/util/helpers.py
+@@ -1,3 +1,4 @@
++from collections import Iterable
+ from itertools import islice, tee
+ 
+ 
+@@ -27,9 +28,9 @@ def pairwise(iterable):
+ 
+ def column_chunks(columns, n):
+     for column in columns:
+-        if not isinstance(column, (list, tuple)):
++        if not isinstance(column, Iterable):
+             raise TypeError(
+-                'Unsupported column type: {}. list or tuple is expected.'
++                'Unsupported column type: {}. Iterable is expected.'
+                 .format(type(column))
+             )
+ 
+-- 
+2.30.2
+
+
