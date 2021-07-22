@@ -1,0 +1,53 @@
+From 9656eefeee3904af23b65c4e512772891b5eae38 Mon Sep 17 00:00:00 2001
+From: Pan Wenbin <panwenbin@gmail.com>
+Date: Fri, 7 May 2021 10:51:36 +0800
+Subject: [PATCH] invoke tolist only if items is not a list
+
+---
+ clickhouse_driver/columns/numpy/stringcolumn.py | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/clickhouse_driver/columns/numpy/stringcolumn.py b/clickhouse_driver/columns/numpy/stringcolumn.py
+index fefe54e..7b8e76c 100644
+--- a/clickhouse_driver/columns/numpy/stringcolumn.py
++++ b/clickhouse_driver/columns/numpy/stringcolumn.py
+@@ -19,7 +19,7 @@ class NumpyStringColumn(NumpyColumn):
+         )
+ 
+     def write_items(self, items, buf):
+-        return buf.write_strings(items.tolist(), encoding=self.encoding)
++        return buf.write_strings(items if isinstance(items, list) else items.tolist(), encoding=self.encoding)
+ 
+ 
+ class NumpyByteStringColumn(NumpyColumn):
+@@ -27,7 +27,7 @@ class NumpyByteStringColumn(NumpyColumn):
+         return np.array(buf.read_strings(n_items), dtype=self.dtype)
+ 
+     def write_items(self, items, buf):
+-        return buf.write_strings(items.tolist())
++        return buf.write_strings(items if isinstance(items, list) else items.tolist())
+ 
+ 
+ class NumpyFixedString(NumpyStringColumn):
+@@ -42,7 +42,7 @@ class NumpyFixedString(NumpyStringColumn):
+ 
+     def write_items(self, items, buf):
+         return buf.write_fixed_strings(
+-            items.tolist(), self.length, encoding=self.encoding
++            items if isinstance(items, list) else items.tolist(), self.length, encoding=self.encoding
+         )
+ 
+ 
+@@ -57,7 +57,7 @@ class NumpyByteFixedString(NumpyByteStringColumn):
+         )
+ 
+     def write_items(self, items, buf):
+-        return buf.write_fixed_strings(items.tolist(), self.length)
++        return buf.write_fixed_strings(items if isinstance(items, list) else items.tolist(), self.length)
+ 
+ 
+ def create_string_column(spec, column_options):
+-- 
+2.30.2
+
+
